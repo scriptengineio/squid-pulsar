@@ -26,14 +26,14 @@ consumer.on('message', event => { });
 consumer.on('error', error => { });
 ```
 
-### Plugins <Redis idempotence>
+### Plugins \<Redis idempotence \>
 
 Options 
  - engine : Redis engine
- - logger 
-   -- enabled : true/false
-   -- info : handler to print info messages
-   -- error : handler to print error messages
+ - logger : Object 
+ - - enabled : true/false
+ - - info : handler to print info messages
+ - - error : handler to print error messages
 ```javascript
 const SquidPulsar = require('@scriptengineio/squid-pulsar');
 await SquidPulsar.init({ clientSettings });

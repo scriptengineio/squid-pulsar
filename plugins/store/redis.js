@@ -17,6 +17,7 @@ Plugin.init = function(settings){
 
 Plugin.onMessage = async function(pulsar, payload){
   if(!Plugin.engine){ throw new Error('Missing Redis engine'); }
+  if(Plugin.engine.status !== 'ready'){ throw new Error('Redis engine not ready'); }
 
   let id    = pulsar.message.getMessageId().toString();
   let topic = pulsar.message.getTopicName?.() || payload.topic;
