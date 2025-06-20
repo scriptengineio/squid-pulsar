@@ -16,6 +16,8 @@ Plugin.init = function(settings){
 };
 
 Plugin.onMessage = async function(pulsar, payload){
+  if(!Plugin.engine){ throw new Error('Missing Redis engine'); }
+
   let id    = pulsar.message.getMessageId().toString();
   let topic = pulsar.message.getTopicName?.() || payload.topic;
   let value = pulsar.message.getData().toString();
@@ -28,11 +30,14 @@ Plugin.onMessage = async function(pulsar, payload){
       Plugin.logger.info({ message : `Duplicate event detected for key ${key}, skipping` }); 
     }
 
+    await pulsar.consumer.acknowledge(pulsar.message);
+
     payload.valid = false; 
     return false; 
   }
 
-  payload.data = JSON.parse(value); // decode
+  payload.valid = true; // Stream
+  payload.data  = JSON.parse(value); // decode
 };
 
 module.exports = Plugin;

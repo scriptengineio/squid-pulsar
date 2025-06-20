@@ -1,5 +1,5 @@
 {
-  "name": "squid-pulsar",
+  "name": "@scriptengineio/squid-pulsar",
   "version": "0.0.1",
   "description": "Squid's realtime event bus",
   "main": "index.js",
@@ -14,6 +14,7 @@
   ],
   "author": "Narciso Guillen",
   "license": "ISC",
+  "private": false,
   "bugs": {
     "url": "https://github.com/scriptengineio/squid-pulsar/issues"
   },
