@@ -1,18 +1,12 @@
 const Plugin = { 
   engine : null, 
-  ttl : 600, 
-  logger : {
-    enabled : false,
-    info    : console.log,
-    error   : console.error
-  }
+  ttl    : 600
 };
 
 Plugin.init = function(settings){
   if(!settings.engine){ throw new Error('Missing Redis engine'); }
   Plugin.engine = settings.engine;
   if(typeof settings.ttl == 'number'){ Plugin.ttl = settings.ttl; }
-  if(settings.logger){ Plugin.logger = settings.logger; }
 };
 
 Plugin.onMessage = async function(pulsar, payload){
@@ -26,11 +20,7 @@ Plugin.onMessage = async function(pulsar, payload){
 
   const isFirst = await Plugin.engine.set(key, value, 'NX', 'EX', Plugin.ttl);
   if (!isFirst) { 
-
-    if(Plugin.logger.enabled){ 
-      Plugin.logger.info({ message : `Duplicate event detected for key ${key}, skipping` }); 
-    }
-
+    console.log({ message : `Duplicate event detected for key ${key}, skipping` }); 
     await pulsar.consumer.acknowledge(pulsar.message);
 
     payload.valid = false; 

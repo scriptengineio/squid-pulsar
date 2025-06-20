@@ -1,5 +1,9 @@
 # At an internal package to us ein micros add into .package.json 
 
+```bash
+  npm install @scriptengineio/squid-pulsar@github:scriptengineio/squid-pulsar#master
+```
+
 ```javascript
     "@scriptengineio/squid-pulsar": "github:scriptengineio/squid-pulsar#master"
 ```
