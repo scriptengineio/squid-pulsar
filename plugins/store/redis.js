@@ -6,7 +6,12 @@ const Plugin = {
 Plugin.init = function(settings){
   if(!settings.engine){ throw new Error('Missing Redis engine'); }
   Plugin.engine = settings.engine;
-  if(typeof settings.ttl == 'number'){ Plugin.ttl = settings.ttl; }
+
+  // ttl
+  if(typeof settings.ttl == 'number'){ 
+    if (settings.ttl <= 0) { throw new Error('Invalid Redis TTL — must be greater than 0 seconds'); }
+    Plugin.ttl = settings.ttl; 
+  }
 };
 
 Plugin.onMessage = async function(pulsar, payload){
@@ -16,13 +21,17 @@ Plugin.onMessage = async function(pulsar, payload){
   let id    = pulsar.message.getMessageId().toString();
   let topic = pulsar.message.getTopicName?.() || payload.topic;
   let value = pulsar.message.getData().toString();
-  let key   = `pulsar-idempotence:${topic}/${id}`;
+  let sub   = payload.subscription || 'default';
+  let nsp   = `pulsar-idempotence:${topic}/${sub}/${id}`;
+  let key   = Buffer.from(nsp).toString('base64url')
+
+  if(sub == 'default'){
+    console.log({ message : 'WARNING default sub', key , value, nsp, level : 'warn' });
+  }
 
   const isFirst = await Plugin.engine.set(key, value, 'NX', 'EX', Plugin.ttl);
   if (!isFirst) { 
-    console.log({ message : `Duplicate event detected for key ${key}, skipping` }); 
-    await pulsar.consumer.acknowledge(pulsar.message);
-
+    console.log({ key, value, nsp, message : `Duplicate event detected. skipping`, level : 'debug' }); 
     payload.valid = false; 
     return false; 
   }

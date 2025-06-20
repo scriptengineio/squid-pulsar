@@ -12,6 +12,7 @@
 *     -- if set that is what it will stream to micro
 *     -- if not set it will by default JSON.parse from string
 *   - payload.topic : {String}
+*   - payload.subscription : {String}
 * .onMessage(<pulsar>, <payload>)
 */
 
