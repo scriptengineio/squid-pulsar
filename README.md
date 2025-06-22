@@ -1,11 +1,9 @@
 # At an internal package to us ein micros add into .package.json 
 
+## Install
+
 ```bash
   npm install @scriptengineio/squid-pulsar@github:scriptengineio/squid-pulsar#master
-```
-
-```javascript
-    "@scriptengineio/squid-pulsar": "github:scriptengineio/squid-pulsar#master"
 ```
 
 ## Usage
@@ -34,21 +32,24 @@ consumer.on('error', error => { });
 
 Options 
  - engine : Redis engine
- - logger : Object 
- - - enabled : true/false
- - - info : handler to print info messages
- - - error : handler to print error messages
+
 ```javascript
 const SquidPulsar = require('@scriptengineio/squid-pulsar');
+const Redis = require('ioredis');
 await SquidPulsar.init({ clientSettings });
 
-SquidPulsar.use('redis', {
-  engine : new Redis(),
-  logger : { enabled : true, info : Logger.info }
-});
+SquidPulsar.use('redis', { engine : new Redis() });
 
 let consumer = await SquidPulsar.addConsumer({ settings });
 
 consumer.on('message', event => { });
 consumer.on('error', error => { });
+```
+
+### Send
+
+```javascript
+const SquidPulsar = require('@scriptengineio/squid-pulsar');
+
+SquidPulsar.send('topic', { message });
 ```

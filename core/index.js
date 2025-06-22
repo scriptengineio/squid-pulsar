@@ -1,5 +1,8 @@
 const SquidPulser = {
-  client : null
+  client : null,
+
+  consumers : new Map(),
+  producers : new Map()
 };
 
 module.exports = SquidPulser;

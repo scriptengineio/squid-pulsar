@@ -1,6 +1,6 @@
 {
   "name": "@scriptengineio/squid-pulsar",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Squid's realtime event bus",
   "main": "index.js",
   "scripts": {},
@@ -21,5 +21,8 @@
   "homepage": "https://github.com/scriptengineio/squid-pulsar#readme",
   "dependencies": {
     "pulsar-client": "^1.13.2"
+  },
+  "peerDependencies": {
+    "ioredis": "^5.6.1"
   }
 }
