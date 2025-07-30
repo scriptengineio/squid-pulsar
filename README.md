@@ -3,7 +3,7 @@
 ## Install
 
 ```bash
-  npm install @scriptengineio/squid-pulsar@github:scriptengineio/squid-pulsar#master
+npm install @scriptengineio/squid-pulsar@github:scriptengineio/squid-pulsar#master
 ```
 
 ## Usage
@@ -28,6 +28,18 @@ consumer.on('message', event => { });
 consumer.on('error', error => { });
 ```
 
+### Produce
+Will register the producer under the topic and store so it will become available for `SquidPulsar.send(\<topc\>, { message })`
+
+```javascript
+const SquidPulsar = require('@scriptengineio/squid-pulsar');
+await SquidPulsar.init({ clientSettings });
+
+let producer = await SquidPulsar.addProducer({ settings });
+
+producer.send({ message });
+```
+
 ### Plugins \<Redis idempotence \>
 
 Options 
@@ -47,6 +59,7 @@ consumer.on('error', error => { });
 ```
 
 ### Send
+Will look for the producer under that topic and use its .send mechanism.
 
 ```javascript
 const SquidPulsar = require('@scriptengineio/squid-pulsar');
