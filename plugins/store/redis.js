@@ -36,8 +36,7 @@ Plugin.onMessage = async function(pulsar, payload){
       message : `Duplicate event detected. skipping`, 
       level   : 'debug', 
       details : {
-        publishTime     : new Date(pulsar.message.getPublishTime()).toISOString(),
-        eventKey        : pulsar.message.getEventKey?.(),
+        publishTime     : new Date(pulsar.message.getPublishTimestamp()).toISOString(),
         redeliveryCount : pulsar.message.getRedeliveryCount?.() || 0,
         properties      : pulsar.message.getProperties?.()
       }
