@@ -16,8 +16,8 @@ module.exports = async function (options) {
     return existing; 
   }
 
-  let consumer   = new Consumer(options);
   let valid      = validateConsumerOptions(options);
+  let consumer   = new Consumer(valid);
 
   valid.listener = consumer.decode.bind(consumer);
 
