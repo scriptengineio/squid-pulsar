@@ -31,7 +31,18 @@ Plugin.onMessage = async function(pulsar, payload){
 
   const isFirst = await Plugin.engine.set(key, value, 'NX', 'EX', Plugin.ttl);
   if (!isFirst) { 
-    console.log({ key, value, nsp, message : `Duplicate event detected. skipping`, level : 'debug' }); 
+
+    console.log({ key, value, nsp, 
+      message : `Duplicate event detected. skipping`, 
+      level   : 'debug', 
+      details : {
+        publishTime     : new Date(pulsar.message.getPublishTime()).toISOString(),
+        eventKey        : pulsar.message.getEventKey?.(),
+        redeliveryCount : pulsar.message.getRedeliveryCount?.() || 0,
+        properties      : pulsar.message.getProperties?.()
+      }
+    }); 
+
     payload.valid = false; 
     return false; 
   }
