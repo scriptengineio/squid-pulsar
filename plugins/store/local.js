@@ -1,24 +1,22 @@
+const { LRUCache } = require('lru-cache');
+
 const Plugin = { 
-  engine : null, 
-  ttl    : 600
-};
-
-Plugin.init = function(settings){
-  (settings) || (settings = {});
-
-  if(!settings.engine){ throw new Error('Missing Redis engine'); }
-  Plugin.engine = settings.engine;
-
-  // ttl
-  if(typeof settings.ttl == 'number'){ 
-    if (settings.ttl <= 0) { throw new Error('Invalid Redis TTL — must be greater than 0 seconds'); }
-    Plugin.ttl = settings.ttl; 
+  cache    : null,
+  settings : {
+   allowStale     : false,
+   ttl            : 1000 * 60 * 5,
+   updateAgeOnGet : false,
+   updateAgeOnHas : false,
   }
 };
 
+Plugin.init = function(settings){
+  if(typeof settings === 'object'){ Object.assign(Plugin.settings, settings) }
+  Plugin.cache = new LRUCache(Plugin.settings);
+};
+
 Plugin.onMessage = async function(pulsar, payload){
-  if(!Plugin.engine){ throw new Error('Missing Redis engine'); }
-  if(Plugin.engine.status !== 'ready'){ throw new Error('Redis engine not ready'); }
+  if(!Plugin.cache){ throw new Error('Missing cache store'); }
 
   let id    = pulsar.message.getMessageId().toString();
   let topic = pulsar.message.getTopicName?.() || payload.topic;
@@ -28,14 +26,14 @@ Plugin.onMessage = async function(pulsar, payload){
   let key   = Buffer.from(nsp).toString('base64url')
 
   if(sub == 'default'){
-    console.log({ message : 'WARNING default sub', key , value, nsp, level : 'warn', plugin : 'redis' });
+    console.log({ message : 'WARNING default sub', key , value, nsp, level : 'warn', plugin : 'local' });
   }
 
-  const isFirst = await Plugin.engine.set(key, value, 'NX', 'EX', Plugin.ttl);
-  if (!isFirst) { 
+  let stored = Plugin.cache.get(key);
 
+  if (stored) { 
     console.log({ key, value, nsp, 
-      plugin  : 'redis',
+      plugin  : 'local',
       message : `Duplicate event detected. skipping`, 
       level   : 'debug', 
       details : {
@@ -48,6 +46,8 @@ Plugin.onMessage = async function(pulsar, payload){
     payload.valid = false; 
     return false; 
   }
+
+  Plugin.cache.set(key, nsp);
 
   payload.valid = true; // Stream
   payload.data  = JSON.parse(value); // decode
