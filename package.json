@@ -21,7 +21,7 @@
   "homepage": "https://github.com/scriptengineio/squid-pulsar#readme",
   "dependencies": {
     "lru-cache": "^11.1.0",
-    "pulsar-client": "^1.13.2"
+    "pulsar-client": "^1.14.0"
   },
   "peerDependencies": {
     "ioredis": "^5.6.1"
